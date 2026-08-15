@@ -1,0 +1,160 @@
+{
+  "model_version": "behavioral-kmeans-v1.0.0",
+  "created_at": "2026-08-14T16:29:27.963357+00:00",
+  "algorithm": "KMeans",
+  "distance_metric": "euclidean",
+  "n_clusters": 2,
+  "random_state": 42,
+  "n_init": 10,
+  "training_rows": 601,
+  "feature_names": [
+    "Days_FearLosingControlOverEating",
+    "Days_ExcludedFoodControlShapeOrWeight",
+    "Days_TriedLimitFoodControlShapeOrWeight",
+    "Days_FollowedRulesControlShapeOrWeight",
+    "Days_FeltFat",
+    "EatLess_ToPreventWeightGain",
+    "EatLess_AfterOvereating",
+    "AvoidEveningEating_ToWatchWeight",
+    "Eat_WhenAnxious",
+    "Eat_WhenThingsGoWrong"
+  ],
+  "feature_order": [
+    "Days_FearLosingControlOverEating",
+    "Days_ExcludedFoodControlShapeOrWeight",
+    "Days_TriedLimitFoodControlShapeOrWeight",
+    "Days_FollowedRulesControlShapeOrWeight",
+    "Days_FeltFat",
+    "EatLess_ToPreventWeightGain",
+    "EatLess_AfterOvereating",
+    "AvoidEveningEating_ToWatchWeight",
+    "Eat_WhenAnxious",
+    "Eat_WhenThingsGoWrong"
+  ],
+  "feature_count": 10,
+  "ordinal_mappings": {
+    "Days_FearLosingControlOverEating": {
+      "No days": 0,
+      "1-5 days": 1,
+      "6-12 days": 2,
+      "13-15 days": 3,
+      "Every day": 4
+    },
+    "Days_ExcludedFoodControlShapeOrWeight": {
+      "No days": 0,
+      "1-5 days": 1,
+      "6-12 days": 2,
+      "13-15 days": 3,
+      "Every day": 4
+    },
+    "Days_TriedLimitFoodControlShapeOrWeight": {
+      "No days": 0,
+      "1-5 days": 1,
+      "6-12 days": 2,
+      "13-15 days": 3,
+      "Every day": 4
+    },
+    "Days_FollowedRulesControlShapeOrWeight": {
+      "No days": 0,
+      "1-5 days": 1,
+      "6-12 days": 2,
+      "13-15 days": 3,
+      "Every day": 4
+    },
+    "Days_FeltFat": {
+      "No days": 0,
+      "1-5 days": 1,
+      "6-12 days": 2,
+      "13-15 days": 3,
+      "Every day": 4
+    },
+    "EatLess_ToPreventWeightGain": {
+      "Never": 0,
+      "Seldom": 1,
+      "Sometimes": 2,
+      "Often": 3,
+      "Very often": 4
+    },
+    "EatLess_AfterOvereating": {
+      "Never": 0,
+      "Seldom": 1,
+      "Sometimes": 2,
+      "Often": 3,
+      "Very often": 4
+    },
+    "AvoidEveningEating_ToWatchWeight": {
+      "Never": 0,
+      "Seldom": 1,
+      "Sometimes": 2,
+      "Often": 3,
+      "Very often": 4
+    },
+    "Eat_WhenAnxious": {
+      "Never": 0,
+      "Seldom": 1,
+      "Sometimes": 2,
+      "Often": 3,
+      "Very often": 4
+    },
+    "Eat_WhenThingsGoWrong": {
+      "Never": 0,
+      "Seldom": 1,
+      "Sometimes": 2,
+      "Often": 3,
+      "Very often": 4
+    }
+  },
+  "cluster_centers": [
+    [
+      2.304347826086956,
+      2.1371237458193963,
+      2.4214046822742463,
+      2.023411371237456,
+      2.5886287625418065,
+      2.0668896321070225,
+      2.113712374581939,
+      2.040133779264215,
+      1.789297658862876,
+      1.6354515050167218
+    ],
+    [
+      0.4271523178807942,
+      0.45364238410595836,
+      0.4999999999999989,
+      0.42384105960264706,
+      0.7516556291390728,
+      0.850993377483443,
+      0.8708609271523172,
+      0.7350993377483453,
+      0.7251655629139068,
+      0.7019867549668861
+    ]
+  ],
+  "semantic_mapping": {
+    "0": "higher_concern",
+    "1": "lower_concern"
+  },
+  "semantic_mapping_rule": "The raw cluster whose center has the higher mean encoded response across all 10 features is labeled 'higher_concern'; the other is 'lower_concern'. Recomputed at training time via argmax(cluster_centers_.mean(axis=1)) -- never a hardcoded raw id.",
+  "borderline_threshold": 1.209605308368845,
+  "borderline_threshold_definition": "25th percentile of |signed distance to the KMeans decision boundary| across the training set. is_borderline = assignment_strength <= borderline_threshold.",
+  "unusual_profile_threshold": 5.635195452833508,
+  "unusual_profile_definition": "97.5th percentile of Euclidean distance to the assigned (nearest) centroid across the training set. is_unusual_profile = distance_to_assigned_centroid >= threshold. A soft warning flag only -- it does not reject or change the prediction.",
+  "assignment_strength_definition": "abs(signed distance to the KMeans decision boundary). A GEOMETRIC DISTANCE in the original 10-feature ordinal space, NOT a calibrated probability.",
+  "training_silhouette": 0.28058086633872303,
+  "training_inertia": 7444.931726062592,
+  "training_cluster_sizes": {
+    "0": 299,
+    "1": 302
+  },
+  "dataset_duplicate_policy": "Trained on Dataset B (601 rows) -- exact full-record duplicates removed.",
+  "library_versions": {
+    "python": "3.12.0",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scikit-learn": "1.9.0",
+    "joblib": "1.5.3"
+  },
+  "source_notebook": "notebooks/04_production_inference_and_packaging.ipynb",
+  "upstream_artifacts": [],
+  "not_a_clinical_diagnostic_tool": true
+}

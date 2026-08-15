@@ -1,0 +1,33 @@
+export const PROTEIN_EMOJIS = {
+  Chicken: "🍗",
+  Beef: "🥩",
+  Fish: "🐟",
+  Turkey: "🦃",
+  Egg: "🥚",
+  Cheese: "🧀",
+};
+
+export const VEGETABLE_EMOJIS = {
+  Avocado: "🥑",
+  "Green Olives": "🫒",
+  "Black Olives": "🫒",
+  "Green Salad": "🥗",
+  Asparagus: "🌱",
+  Zucchini: "🥒",
+  "Bell Pepper": "🫑",
+  Mushrooms: "🍄",
+  Spinach: "🥬",
+  Broccoli: "🥦",
+  Cauliflower: "🥦",
+  Cucumber: "🥒",
+  "Brussels Sprouts": "🥬",
+  "White Cabbage": "🥬",
+  "Red Cabbage": "🥬",
+  Kale: "🥬",
+  "Green Beans": "🫛",
+  Celery: "🌿",
+  Parsley: "🌿",
+  Basil: "🌿",
+  Lettuce: "🥬",
+  Radish: "🫜",
+};
