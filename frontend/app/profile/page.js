@@ -7,8 +7,11 @@ import AppHeader from "@/components/AppHeader";
 import { API_BASE_URL } from "@/lib/api";
 
 const FREQUENCY_OPTIONS = [
+  { value: "every_minute", label: "Every minute (for testing)" },
+  { value: "daily", label: "Daily" },
+  { value: "every_2_days", label: "Every 2 days" },
   { value: "weekly", label: "Weekly" },
-  { value: "biweekly", label: "Biweekly" },
+  { value: "biweekly", label: "Every 2 weeks" },
   { value: "monthly", label: "Monthly" },
   { value: "quarterly", label: "Quarterly" },
   { value: "off", label: "Off" },
@@ -34,7 +37,7 @@ function EyeIcon({ visible }) {
 
 function Pill({ children }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-[#eaf3ea] px-4 py-1.5 text-sm text-[#4f7a52]">
+    <span className="inline-flex items-center rounded-full bg-primary-light px-4 py-1.5 text-sm text-primary-dark">
       {children}
     </span>
   );
@@ -231,7 +234,7 @@ export default function ProfilePage() {
     currentPassword && newPassword && confirmPassword && newPassword === confirmPassword;
 
   return (
-    <div className="min-h-screen bg-[#f6f8f5]">
+    <div className="min-h-screen bg-background">
       <AppHeader active="profile" />
 
       <main className="max-w-3xl mx-auto px-6 sm:px-8 py-10">
@@ -252,15 +255,15 @@ export default function ProfilePage() {
                 <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                   Personal Information
                 </p>
-                {!isEditing && (
+                {/* {!isEditing && (
                   <button
                     type="button"
                     onClick={startEditing}
-                    className="text-sm font-medium text-[#6f9b6f] hover:underline"
+                    className="text-sm font-medium text-primary hover:underline"
                   >
                     Edit →
                   </button>
-                )}
+                )} */}
               </div>
               <div className="mt-4 pt-4 border-t border-gray-100">
                 {isEditing ? (
@@ -271,7 +274,7 @@ export default function ProfilePage() {
                         type="text"
                         value={draftName}
                         onChange={(e) => setDraftName(e.target.value)}
-                        className="w-full h-11 rounded-xl bg-[#eef2ef] px-4 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+                        className="w-full h-11 rounded-xl bg-input px-4 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                     <div>
@@ -280,7 +283,7 @@ export default function ProfilePage() {
                         type="email"
                         value={draftEmail}
                         onChange={(e) => setDraftEmail(e.target.value)}
-                        className="w-full h-11 rounded-xl bg-[#eef2ef] px-4 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+                        className="w-full h-11 rounded-xl bg-input px-4 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                     {profileError && <p className="text-sm text-red-500">{profileError}</p>}
@@ -290,7 +293,7 @@ export default function ProfilePage() {
                         type="button"
                         disabled={savingProfile}
                         onClick={saveChanges}
-                        className="rounded-xl bg-[#eaf3ea] px-5 py-2.5 text-sm font-semibold text-[#4f7a52] hover:bg-[#dcebdc] transition-colors disabled:opacity-70"
+                        className="rounded-xl bg-primary-light px-5 py-2.5 text-sm font-semibold text-primary-dark hover:bg-[#dcebdc] transition-colors disabled:opacity-70"
                       >
                         {savingProfile ? "Saving..." : "Save Changes"}
                       </button>
@@ -326,7 +329,7 @@ export default function ProfilePage() {
                 </p>
                 <Link
                   href="/profile/preferences/proteins"
-                  className="text-sm font-medium text-[#6f9b6f] hover:underline"
+                  className="text-sm font-medium text-primary hover:underline"
                 >
                   Edit Preferences →
                 </Link>
@@ -368,7 +371,7 @@ export default function ProfilePage() {
                   <select
                     value={frequency}
                     onChange={handleFrequencyChange}
-                    className="rounded-xl bg-[#eef2ef] px-4 py-2.5 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+                    className="rounded-xl bg-input px-4 py-2.5 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-primary"
                   >
                     {FREQUENCY_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -398,7 +401,7 @@ export default function ProfilePage() {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="Enter current password"
-                        className="w-full h-11 rounded-xl bg-[#eef2ef] px-4 pr-11 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+                        className="w-full h-11 rounded-xl bg-input px-4 pr-11 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
                       />
                       <button
                         type="button"
@@ -420,7 +423,7 @@ export default function ProfilePage() {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Enter new password"
-                        className="w-full h-11 rounded-xl bg-[#eef2ef] px-4 pr-11 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+                        className="w-full h-11 rounded-xl bg-input px-4 pr-11 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
                       />
                       <button
                         type="button"
@@ -442,7 +445,7 @@ export default function ProfilePage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm new password"
-                        className="w-full h-11 rounded-xl bg-[#eef2ef] px-4 pr-11 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+                        className="w-full h-11 rounded-xl bg-input px-4 pr-11 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
                       />
                       <button
                         type="button"
@@ -463,8 +466,8 @@ export default function ProfilePage() {
                       onClick={submitPasswordChange}
                       className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${
                         canChangePassword && !passwordSaving
-                          ? "bg-[#6f9b6f] text-white hover:bg-[#5f8a5f] cursor-pointer"
-                          : "bg-[#e3ebe3] text-gray-400 cursor-not-allowed"
+                          ? "bg-primary text-white hover:bg-primary-hover cursor-pointer"
+                          : "bg-disabled text-gray-400 cursor-not-allowed"
                       }`}
                     >
                       {passwordSaving ? "Changing..." : "Change Password"}
@@ -483,11 +486,21 @@ export default function ProfilePage() {
               <div className="mt-6 bg-white rounded-3xl shadow-sm p-8">
                 <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Account</p>
                 {passwordSuccess && (
-                  <p className="mt-4 rounded-xl bg-[#eaf3ea] px-4 py-3 text-sm font-medium text-[#4f7a52]">
+                  <p className="mt-4 rounded-xl bg-primary-light px-4 py-3 text-sm font-medium text-primary-dark">
                     Password changed successfully.
                   </p>
                 )}
                 <div className="mt-4 pt-4 border-t border-gray-100">
+                  <Link
+                    href="/about"
+                    className="w-full flex items-center justify-between py-3 text-left"
+                  >
+                    <span className="font-medium text-gray-900">About</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                      <polyline points="9 6 15 12 9 18" />
+                    </svg>
+                  </Link>
+                  <div className="border-t border-gray-100" />
                   <button
                     type="button"
                     onClick={startChangingPassword}

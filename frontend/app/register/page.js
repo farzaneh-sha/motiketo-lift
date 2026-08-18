@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AvocadoLogo from "@/components/AvocadoLogo";
 import { API_BASE_URL } from "@/lib/api";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,22 +69,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center bg-[#f6f8f5] px-4 py-10">
+    <main className="min-h-screen w-full flex items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-sm px-6 py-8">
         {/* Logo */}
         <div className="flex flex-col items-center">
-          <div className="w-11 h-14 rounded-2xl bg-[#6f9b6f] flex items-center justify-center">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            >
-              <rect x="6" y="6" width="12" height="12" rx="2" transform="rotate(45 12 12)" />
-            </svg>
+          <div className="w-11 h-14 rounded-2xl flex items-center justify-center">
+            <AvocadoLogo size={45} />
           </div>
           <h1 className="mt-2 text-base font-bold text-gray-900">MotiKeto Lift</h1>
         </div>
@@ -97,7 +88,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Form */}
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit} autoComplete="off">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-800 mb-1.5">
               Name
@@ -109,7 +100,8 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               required
-              className="w-full h-11 rounded-lg bg-[#eef2ef] px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+              autoComplete="off"
+              className="w-full h-11 rounded-lg bg-input px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -119,12 +111,14 @@ export default function RegisterPage() {
             </label>
             <input
               id="email"
-              type="email"
+              type="text"
+              inputMode="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full h-11 rounded-lg bg-[#eef2ef] px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+              autoComplete="off"
+              className="w-full h-11 rounded-lg bg-input px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -140,7 +134,8 @@ export default function RegisterPage() {
               placeholder="Create a password"
               required
               minLength={6}
-              className="w-full h-11 rounded-lg bg-[#eef2ef] px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+              autoComplete="new-password"
+              className="w-full h-11 rounded-lg bg-input px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -149,7 +144,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 rounded-lg bg-[#6f9b6f] text-white text-sm font-semibold shadow-sm hover:bg-[#5f8a5f] transition-colors mt-1 disabled:opacity-70"
+            className="w-full h-11 rounded-lg bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primary-hover transition-colors mt-1 disabled:opacity-70"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>

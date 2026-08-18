@@ -57,7 +57,6 @@ export default function QuestionnairePage() {
     setError("");
     setSaving(true);
 
-    let profileData;
     try {
       const profileRes = await fetch(`${API_BASE_URL}/users/${userId}/behavior-profiles`, {
         method: "POST",
@@ -70,30 +69,8 @@ export default function QuestionnairePage() {
         setSaving(false);
         return;
       }
-
-      profileData = await profileRes.json();
     } catch {
       setError("Could not save behavioral profile.");
-      setSaving(false);
-      return;
-    }
-
-    localStorage.setItem("behavior_cluster", profileData.prediction.semantic_cluster);
-
-    try {
-      const mealPlanRes = await fetch(`${API_BASE_URL}/users/${userId}/meal-plans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-
-      if (!mealPlanRes.ok) {
-        setError("Could not create meal plan.");
-        setSaving(false);
-        return;
-      }
-    } catch {
-      setError("Could not create meal plan.");
       setSaving(false);
       return;
     }
@@ -102,7 +79,7 @@ export default function QuestionnairePage() {
   }
 
   return (
-    <main className="min-h-screen w-full bg-[#f6f8f5] px-4 py-8">
+    <main className="min-h-screen w-full bg-background px-4 py-8">
       <div className="max-w-2xl mx-auto">
         <OnboardingHeader backHref="/onboarding/vegetables" step={3} totalSteps={3} />
 
@@ -124,11 +101,11 @@ export default function QuestionnairePage() {
                 <span className="text-gray-800 font-medium">
                   Question {currentIndex + 1} of {questions.length}
                 </span>
-                <span className="text-[#6f9b6f] font-medium">{percent}%</span>
+                <span className="text-primary font-medium">{percent}%</span>
               </div>
               <div className="mt-2 h-2 rounded-full bg-gray-100">
                 <div
-                  className="h-2 rounded-full bg-[#6f9b6f] transition-all"
+                  className="h-2 rounded-full bg-primary transition-all"
                   style={{ width: `${percent}%` }}
                 />
               </div>
@@ -145,16 +122,16 @@ export default function QuestionnairePage() {
                       onClick={() => selectAnswer(option)}
                       className={`w-full flex items-center gap-3 rounded-xl border px-4 py-4 text-left transition-colors ${
                         isSelected
-                          ? "bg-[#eaf3ea] border-[#6f9b6f]"
+                          ? "bg-primary-light border-primary"
                           : "bg-white border-gray-200 hover:bg-gray-50"
                       }`}
                     >
                       <span
                         className={`w-5 h-5 shrink-0 rounded-full border flex items-center justify-center ${
-                          isSelected ? "border-[#6f9b6f]" : "border-gray-300"
+                          isSelected ? "border-primary" : "border-gray-300"
                         }`}
                       >
-                        {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-[#6f9b6f]" />}
+                        {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
                       </span>
                       <span className={isSelected ? "text-[#3f6b42] font-medium" : "text-gray-800"}>
                         {option}
@@ -185,8 +162,8 @@ export default function QuestionnairePage() {
                   onClick={goNext}
                   className={`flex-1 h-12 rounded-full font-semibold transition-colors ${
                     currentAnswer && !saving
-                      ? "bg-[#6f9b6f] text-white hover:bg-[#5f8a5f] cursor-pointer"
-                      : "bg-[#e3ebe3] text-gray-400 cursor-not-allowed"
+                      ? "bg-primary text-white hover:bg-primary-hover cursor-pointer"
+                      : "bg-disabled text-gray-400 cursor-not-allowed"
                   }`}
                 >
                   {saving ? "Saving..." : isLastQuestion ? "See Result" : "Next"}

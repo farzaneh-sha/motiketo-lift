@@ -1,9 +1,21 @@
 @import "tailwindcss";
 
+/* MotiKeto Lift brand colors — the single source of truth for the
+   recurring green identity. Change a value here to update it everywhere. */
+@theme {
+  --color-primary: #6f9b6f;
+  --color-primary-hover: #5f8a5f;
+  --color-primary-light: #eaf3ea;
+  --color-primary-dark: #4f7a52;
+  --color-background: #f6f8f5;
+  --color-input: #eef2ef;
+  --color-disabled: #e3ebe3;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px #eef2ef inset;
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-input) inset;
   -webkit-text-fill-color: #374151;
   transition: background-color 5000s ease-in-out 0s;
 }

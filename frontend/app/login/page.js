@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AvocadoLogo from "@/components/AvocadoLogo";
 import { API_BASE_URL } from "@/lib/api";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,30 +52,52 @@ export default function LoginPage() {
 
       const data = await res.json();
       localStorage.setItem("user_id", String(data.user_id));
-      router.push("/dashboard");
+      await redirectToOnboardingStep(data.user_id);
     } catch {
       setError("Invalid email or password.");
       setLoading(false);
     }
   }
 
+  async function redirectToOnboardingStep(userId) {
+    try {
+      const statusRes = await fetch(`${API_BASE_URL}/users/${userId}/onboarding-status`);
+      if (!statusRes.ok) {
+        router.push("/dashboard");
+        return;
+      }
+
+      const status = await statusRes.json();
+
+      if (status.next_step === "proteins") {
+        router.push("/onboarding/proteins");
+        return;
+      }
+      if (status.next_step === "vegetables") {
+        router.push("/onboarding/vegetables");
+        return;
+      }
+      if (status.next_step === "questionnaire") {
+        router.push("/onboarding/questionnaire");
+        return;
+      }
+      if (status.next_step === "result") {
+        router.push("/onboarding/result");
+        return;
+      }
+      router.push("/dashboard");
+    } catch {
+      router.push("/dashboard");
+    }
+  }
+
   return (
-    <main className="min-h-screen w-full flex items-center justify-center bg-[#f6f8f5] px-4 py-10">
+    <main className="min-h-screen w-full flex items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-sm px-6 py-8">
         {/* Logo */}
         <div className="flex flex-col items-center">
-          <div className="w-11 h-14 rounded-2xl bg-[#6f9b6f] flex items-center justify-center">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            >
-              <rect x="6" y="6" width="12" height="12" rx="2" transform="rotate(45 12 12)" />
-            </svg>
+          <div className="w-11 h-14 rounded-2xl flex items-center justify-center">
+            <AvocadoLogo size={45} />
           </div>
           <h1 className="mt-2 text-base font-bold text-gray-900">MotiKeto Lift</h1>
         </div>
@@ -100,14 +123,19 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full h-11 rounded-lg bg-[#eef2ef] px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+              className="w-full h-11 rounded-lg bg-input px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-800 mb-1.5">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-800">
+                Password
+              </label>
+              <Link href="/forgot-password" className="text-xs font-medium text-primary">
+                Forgot Password?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"
@@ -115,7 +143,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              className="w-full h-11 rounded-lg bg-[#eef2ef] px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#6f9b6f]"
+              className="w-full h-11 rounded-lg bg-input px-3.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -124,7 +152,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 rounded-lg bg-[#6f9b6f] text-white text-sm font-semibold shadow-sm hover:bg-[#5f8a5f] transition-colors mt-1 disabled:opacity-70"
+            className="w-full h-11 rounded-lg bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primary-hover transition-colors mt-1 disabled:opacity-70"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>

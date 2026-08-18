@@ -1,4 +1,62 @@
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="8" fill="#6f9b6f" />
-  <rect x="11" y="11" width="10" height="10" rx="2" fill="white" transform="rotate(45 16 16)" />
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MotiKeto Lift Avocado Logo</title>
+  <desc id="desc">Minimal avocado logo with olive green outer shape, light green flesh, and brown seed.</desc>
+
+  <defs>
+    <linearGradient id="flesh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#DDE8A8"/>
+      <stop offset="100%" stop-color="#B8CC72"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Avocado outer body -->
+  <path
+    d="M256 48
+       C216 48 186 88 162 132
+       C134 184 96 242 96 318
+       C96 406 166 464 256 464
+       C346 464 416 406 416 318
+       C416 242 378 184 350 132
+       C326 88 296 48 256 48Z"
+    fill="#6F7F36"/>
+
+  <!-- Avocado flesh -->
+  <path
+    d="M256 82
+       C226 82 202 116 181 155
+       C155 203 124 254 124 318
+       C124 388 181 436 256 436
+       C331 436 388 388 388 318
+       C388 254 357 203 331 155
+       C310 116 286 82 256 82Z"
+    fill="url(#flesh)"/>
+
+  <!-- Inner highlight -->
+  <path
+    d="M235 106
+       C212 128 189 165 172 199
+       C153 237 141 275 141 317
+       C141 363 164 398 199 417
+       C166 392 147 357 147 317
+       C147 272 162 232 182 194
+       C199 161 219 130 245 111Z"
+    fill="#F1F5D7"
+    opacity="0.55"/>
+
+  <!-- Seed -->
+  <circle cx="256" cy="326" r="82" fill="#9B633E"/>
+  <circle cx="236" cy="302" r="24" fill="#B98059" opacity="0.45"/>
+
+  <!-- Small leaf accent -->
+  <path
+    d="M327 76
+       C355 50 391 52 408 69
+       C389 91 353 98 327 76Z"
+    fill="#81964A"/>
+  <path
+    d="M327 76 C348 75 370 72 393 61"
+    fill="none"
+    stroke="#5F7132"
+    stroke-width="7"
+    stroke-linecap="round"/>
 </svg>

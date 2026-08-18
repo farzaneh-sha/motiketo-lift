@@ -18,7 +18,7 @@ export default function AuthGuard({ children }) {
 
   if (!checked) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#f6f8f5]">
+      <main className="min-h-screen flex items-center justify-center bg-background">
         <p className="text-sm text-gray-500">Checking authentication...</p>
       </main>
     );

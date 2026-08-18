@@ -109,6 +109,19 @@ class ChangePasswordRequest(BaseModel):
     new_password: str
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+    new_password: str = Field(min_length=6)
+
+    _validate_email = field_validator("email")(_validate_email_format)
+
+
+class DeleteUserByEmailRequest(BaseModel):
+    email: str
+
+    _validate_email = field_validator("email")(_validate_email_format)
+
+
 
 class ProteinIdsRequest(BaseModel):
     protein_ids: list[int]
@@ -123,7 +136,10 @@ class MealPlanRequest(BaseModel):
 
 
 class MessageFrequencyRequest(BaseModel):
-    message_frequency: Literal["weekly", "biweekly", "monthly", "quarterly", "off"]
+    message_frequency: Literal[
+        "every_minute", "daily", "every_2_days",
+        "weekly", "biweekly", "monthly", "quarterly", "off",
+    ]
 
 
 class WeeklyCheckinRequest(BaseModel):
@@ -142,7 +158,15 @@ WEEKLY_CHECKIN_SCORES = {
 }
 
 
-MESSAGE_FREQUENCY_DAYS = {"weekly": 7, "biweekly": 14, "monthly": 30, "quarterly": 90}
+MESSAGE_FREQUENCY_INTERVALS = {
+    "every_minute": timedelta(minutes=1),
+    "daily": timedelta(days=1),
+    "every_2_days": timedelta(days=2),
+    "weekly": timedelta(days=7),
+    "biweekly": timedelta(days=14),
+    "monthly": timedelta(days=30),
+    "quarterly": timedelta(days=90),
+}
 
 
 
@@ -225,6 +249,18 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     return {"user_id": user.id, "name": user.name, "email": user.email}
 
 
+@app.post("/forgot-password")
+def forgot_password(body: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(func.lower(User.email) == body.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with this email")
+
+    user.password_hash = body.new_password
+    db.commit()
+
+    return {"message": "Password reset successfully"}
+
+
 
 @app.get("/users")
 def get_users(db: Session = Depends(get_db)):
@@ -268,6 +304,41 @@ def change_password(user_id: int, body: ChangePasswordRequest, db: Session = Dep
     return {"message": "Password changed successfully"}
 
 
+@app.delete("/users/by-email")
+def delete_user_by_email(body: DeleteUserByEmailRequest, db: Session = Depends(get_db)):
+    """Admin/testing utility: permanently deletes a user and all of their data."""
+    user = db.query(User).filter(func.lower(User.email) == body.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user_id = user.id
+
+    user.proteins = []
+    user.vegetables = []
+    db.flush()
+
+    db.query(WeeklyCheckin).filter(WeeklyCheckin.user_id == user_id).delete(synchronize_session=False)
+
+    meal_plan_ids = [mp.id for mp in db.query(MealPlan).filter(MealPlan.user_id == user_id).all()]
+    if meal_plan_ids:
+        db.query(MealPlanItem).filter(MealPlanItem.meal_plan_id.in_(meal_plan_ids)).delete(synchronize_session=False)
+    db.query(MealPlan).filter(MealPlan.user_id == user_id).delete(synchronize_session=False)
+
+    profile_ids = [bp.id for bp in db.query(BehaviorProfile).filter(BehaviorProfile.user_id == user_id).all()]
+    if profile_ids:
+        db.query(QuestionnaireAnswer).filter(
+            QuestionnaireAnswer.behavior_profile_id.in_(profile_ids)
+        ).delete(synchronize_session=False)
+    db.query(BehaviorProfile).filter(BehaviorProfile.user_id == user_id).delete(synchronize_session=False)
+
+    db.query(UserMessage).filter(UserMessage.user_id == user_id).delete(synchronize_session=False)
+
+    db.delete(user)
+    db.commit()
+
+    return {"message": "User and all related data deleted successfully", "email": body.email}
+
+
 
 @app.get("/proteins")
 def get_proteins(db: Session = Depends(get_db)):
@@ -301,8 +372,19 @@ def set_user_proteins(user_id: int, body: ProteinIdsRequest, db: Session = Depen
     if len(proteins) != len(set(body.protein_ids)):
         raise HTTPException(status_code=400, detail="One or more protein_ids are invalid")
 
-    user.proteins = proteins  
-    db.commit()
+    previous_protein_ids = {protein.id for protein in user.proteins}
+    preferences_changed = previous_protein_ids != set(body.protein_ids)
+
+    user.proteins = proteins
+
+    has_active_plan = (
+        db.query(MealPlan).filter(MealPlan.user_id == user_id, MealPlan.is_active == True).first()
+        is not None
+    )
+    if preferences_changed and has_active_plan and user.vegetables:
+        generate_meal_plan(db, user_id)
+    else:
+        db.commit()
 
     return {"user_id": user.id, "proteins": [p.name for p in user.proteins]}
 
@@ -317,8 +399,19 @@ def set_user_vegetables(user_id: int, body: VegetableIdsRequest, db: Session = D
     if len(vegetables) != len(set(body.vegetable_ids)):
         raise HTTPException(status_code=400, detail="One or more vegetable_ids are invalid")
 
-    user.vegetables = vegetables  
-    db.commit()
+    previous_vegetable_ids = {vegetable.id for vegetable in user.vegetables}
+    preferences_changed = previous_vegetable_ids != set(body.vegetable_ids)
+
+    user.vegetables = vegetables
+
+    has_active_plan = (
+        db.query(MealPlan).filter(MealPlan.user_id == user_id, MealPlan.is_active == True).first()
+        is not None
+    )
+    if preferences_changed and has_active_plan and user.proteins:
+        generate_meal_plan(db, user_id)
+    else:
+        db.commit()
 
     return {"user_id": user.id, "vegetables": [v.name for v in user.vegetables]}
 
@@ -393,9 +486,11 @@ def record_usage(usage_count, recent_ids, chosen_id, window_size):
         recent_ids.pop(0)
 
 
-@app.post("/users/{user_id}/meal-plans")
-def create_meal_plan(user_id: int, body: MealPlanRequest, db: Session = Depends(get_db)):
-    plan_start_date = body.start_date or date.today()
+def generate_meal_plan(db: Session, user_id: int, start_date: date | None = None) -> MealPlan:
+    """Deactivates any existing active meal plan(s) for the user and generates a fresh
+    4-week meal plan from their current protein/vegetable preferences. Shared by the
+    meal-plan creation endpoint and by preference updates that must regenerate the plan."""
+    plan_start_date = start_date or date.today()
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -475,6 +570,13 @@ def create_meal_plan(user_id: int, body: MealPlanRequest, db: Session = Depends(
     except Exception:
         db.rollback()
         raise
+
+    return new_plan
+
+
+@app.post("/users/{user_id}/meal-plans")
+def create_meal_plan(user_id: int, body: MealPlanRequest, db: Session = Depends(get_db)):
+    new_plan = generate_meal_plan(db, user_id, body.start_date)
 
     meals_created = db.query(MealPlanItem).filter(MealPlanItem.meal_plan_id == new_plan.id).count()
 
@@ -878,8 +980,8 @@ def get_motivational_message_for_display(user_id: int, db: Session = Depends(get
         else None
     )
 
-    days_required = MESSAGE_FREQUENCY_DAYS[user.message_frequency]
-    expired = latest_message is not None and datetime.utcnow() >= latest_message.sent_at + timedelta(days=days_required)
+    interval = MESSAGE_FREQUENCY_INTERVALS[user.message_frequency]
+    expired = latest_message is not None and datetime.utcnow() >= latest_message.sent_at + interval
     needs_new_message = (
         latest_message is None
         or current_message.behavior_cluster != latest_profile.behavior_cluster
@@ -901,7 +1003,7 @@ def get_motivational_message_for_display(user_id: int, db: Session = Depends(get
         user_message, message = latest_message, current_message
         changed = False
 
-    next_change_at = user_message.sent_at + timedelta(days=days_required)
+    next_change_at = user_message.sent_at + interval
     return {
         "message": message.message,
         "cluster": message.behavior_cluster,
@@ -923,6 +1025,34 @@ def set_message_frequency(user_id: int, body: MessageFrequencyRequest, db: Sessi
     db.commit()
 
     return {"user_id": user.id, "message_frequency": user.message_frequency}
+
+
+@app.get("/users/{user_id}/onboarding-status")
+def get_onboarding_status(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not user.proteins:
+        return {"completed": False, "next_step": "proteins"}
+
+    if not user.vegetables:
+        return {"completed": False, "next_step": "vegetables"}
+
+    has_behavior_profile = (
+        db.query(BehaviorProfile).filter(BehaviorProfile.user_id == user_id).first() is not None
+    )
+    if not has_behavior_profile:
+        return {"completed": False, "next_step": "questionnaire"}
+
+    has_active_meal_plan = (
+        db.query(MealPlan).filter(MealPlan.user_id == user_id, MealPlan.is_active == True).first()
+        is not None
+    )
+    if not has_active_meal_plan:
+        return {"completed": False, "next_step": "result"}
+
+    return {"completed": True, "next_step": "dashboard"}
 
 
 @app.get("/users/{user_id}/dashboard")

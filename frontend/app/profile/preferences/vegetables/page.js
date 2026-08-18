@@ -91,7 +91,7 @@ export default function EditVegetablePreferencesPage() {
   const visibleVegetables = vegetables.slice(0, visibleCount);
 
   return (
-    <main className="min-h-screen w-full bg-[#f6f8f5] px-4 py-8">
+    <main className="min-h-screen w-full bg-background px-4 py-8">
       <div className="max-w-2xl mx-auto">
         <OnboardingHeader backHref="/profile/preferences/proteins" step={2} totalSteps={3} />
 
@@ -112,7 +112,7 @@ export default function EditVegetablePreferencesPage() {
               <button
                 type="button"
                 onClick={toggleSelectAll}
-                className="text-[#6f9b6f] font-medium hover:underline"
+                className="text-primary font-medium hover:underline"
               >
                 Select all
               </button>
@@ -159,8 +159,8 @@ export default function EditVegetablePreferencesPage() {
               onClick={handleContinue}
               className={`mt-4 w-full h-12 rounded-xl font-semibold transition-colors ${
                 canContinue
-                  ? "bg-[#6f9b6f] text-white hover:bg-[#5f8a5f] cursor-pointer"
-                  : "bg-[#e3ebe3] text-gray-400 cursor-not-allowed"
+                  ? "bg-primary text-white hover:bg-primary-hover cursor-pointer"
+                  : "bg-disabled text-gray-400 cursor-not-allowed"
               }`}
             >
               {saving ? "Saving..." : "Continue"}

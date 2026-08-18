@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AvocadoLogo from "./AvocadoLogo";
 
 export default function OnboardingHeader({ backHref, step, totalSteps }) {
   return (
@@ -14,9 +15,7 @@ export default function OnboardingHeader({ backHref, step, totalSteps }) {
           Back
         </Link>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[#6f9b6f] flex items-center justify-center">
-            <span className="w-2.5 h-2.5 rounded-full bg-white" />
-          </div>
+          <AvocadoLogo size={18}/>
           <span className="text-sm font-bold text-gray-900">MotiKeto Lift</span>
         </div>
       </div>
@@ -32,7 +31,7 @@ export default function OnboardingHeader({ backHref, step, totalSteps }) {
           <div
             key={index}
             className={`h-1.5 flex-1 rounded-full ${
-              index < step ? "bg-[#6f9b6f]" : "bg-gray-200"
+              index < step ? "bg-primary" : "bg-gray-200"
             }`}
           />
         ))}

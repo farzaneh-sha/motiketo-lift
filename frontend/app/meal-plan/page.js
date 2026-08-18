@@ -110,7 +110,7 @@ export default function MealPlanPage() {
   const currentWeekData = mealPlan?.weeks.find((week) => week.week_number === activeWeek);
 
   return (
-    <div className="min-h-screen bg-[#f6f8f5]">
+    <div className="min-h-screen bg-background">
       <AppHeader active="meal-plan" />
 
       <main className="max-w-6xl mx-auto px-6 sm:px-8 py-10">
@@ -131,7 +131,7 @@ export default function MealPlanPage() {
             </p>
 
             {/* Week tabs */}
-            <div className="mt-6 inline-flex flex-wrap items-center gap-1 rounded-full bg-[#eef2ef] p-1.5">
+            <div className="mt-6 inline-flex flex-wrap items-center gap-1 rounded-full bg-input p-1.5">
               {mealPlan.weeks.map((week) => (
                 <button
                   key={week.week_number}
